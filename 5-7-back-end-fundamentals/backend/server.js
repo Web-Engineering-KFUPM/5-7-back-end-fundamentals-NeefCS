@@ -1,42 +1,28 @@
-// server/server.js
-import express from 'express';
+import express from "express";
+import cors from "cors";
+
 const app = express();
+app.use(express.json());
+app.use(cors());
 
-// --- fundamentals middleware ---
-app.use(express.json()); // parse JSON request bodies
-
-// allow the Vite dev server (different port) to call this API
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  next();
-});
-
-// --- in-memory data (no DB) ---
+// initial data
 let students = [
-  { id: 1, name: 'Aisha' },
-  { id: 2, name: 'Hasan' }
+  { name: "Aisha" },
+  { name: "Hasan" },
 ];
 
-// --- routes ---
-// Read: client requests data
-app.get('/api/students', (req, res) => {
+// get all students
+app.get("/api/students", (req, res) => {
   res.json(students);
 });
 
-// Create: client sends data
-app.post('/api/students', (req, res) => {
-  const { name } = req.body || {};
-  if (!name || !name.trim()) {
-    return res.status(400).json({ error: 'Name is required' });
-  }
-  const newStudent = { id: Date.now(), name: name.trim() };
+// add new student
+app.post("/api/students", (req, res) => {
+  const newStudent = req.body;
   students.push(newStudent);
-  res.status(201).json(newStudent);
+  res.json(newStudent);
 });
 
-// --- start server ---
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`✅ API running at http://localhost:${PORT}`);
+app.listen(3000, () => {
+  console.log("✅ API running at http://localhost:3000");
 });
